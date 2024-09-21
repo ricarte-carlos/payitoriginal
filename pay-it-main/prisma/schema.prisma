@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum role {
+  Admin
+  Editor
+  Ascent_Admin
+}
+
+
+enum collectionType {
+  Carousel
+  Video
+}
+
+enum videoSection {
+  WhatsNew
+}
+
+model User {
+  id           String       @id @unique
+  username     String
+  name         String?
+  email        String?
+  role         role         @default(Admin)
+  auth_session Session[]
+  key          Key[]
+  collection   Collection[]
+}
+
+model Session {
+  id             String @id @unique
+  user_id        String
+  active_expires BigInt
+  idle_expires   BigInt
+  user           User   @relation(references: [id], fields: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model Key {
+  id              String  @id @unique
+  hashed_password String?
+  user_id         String
+  user            User    @relation(references: [id], fields: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model Carousel {
+  id          String    @id @unique @default(cuid())
+  image       String    
+  key         String   
+  position    Int       @unique
+  title       String?
+  description String?
+  link     String?
+  publishedAt DateTime?
+}
+
+model Video {
+  id          String    @id @unique @default(cuid())
+  title       String
+  description String
+  link        String
+  callToAction String?
+  section     videoSection @unique
+  publishedAt DateTime?
+}
+
+model Collection {
+  id         String         @id @unique @default(cuid())
+  name       String         
+  type       collectionType
+  permission Boolean        @default(false)
+  user_id    String
+  user       User           @relation(references: [id], fields: [user_id], onDelete: Cascade)
+}

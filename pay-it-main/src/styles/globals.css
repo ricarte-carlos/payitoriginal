@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --nav-sidebar: 0, 0%, 90%;
+    --admin: 0, 0%, 95%;
+  }
+
+  .dark {
+    --nav-sidebar: 224 71% 7%;
+    --admin: 223 70% 4%;
+  }
+}
